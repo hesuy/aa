@@ -8,30 +8,39 @@ var sourcemaps = require('gulp-sourcemaps');//便于压缩后调试代码
 var rename = require('gulp-rename');//重命名文件名称
 var uglify = require('gulp-uglify');//js压缩
 var jshint = require('gulp-jshint');//js语法检查
+var concat = require('gulp-concat');//文件合并
 var combiner = require('stream-combiner2');
 
-//less文件编译与合并
+//less文件编译
 gulp.task('less',function(){
     gulp.src('src/less/**/*.less')
         .pipe(sourcemaps.init())
         .pipe(less())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('src/css/'))
+});
+//css文件合并压缩
+gulp.task('minifycss',function(){
+    gulp.src('src/css/**/*.css')
         .pipe(autoprefixer({
             browers:['last 2 versions','Android>=4.0'],
             remove:true
         }))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('src/css/'))
+        .pipe(concat('main.css'))
+        .pipe(gulp.dest('dist/css/'))
         .pipe(rename({suffix:'.min'}))
         .pipe(minifycss())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist/css'));
-});
-//语法检查
+        .pipe(gulp.dest('dist/css/'))
+})
+//js语法检查
 gulp.task('jshint',function(){
     return gulp.src('src/js/**/*.js')
                .pipe(jshint())
                .pipe(jshint.reporter('default'))
 })
+
+//编译报错信息提示
 var handleError = function (err) {
     var colors = gutil.colors;
     console.log('\n')
@@ -41,7 +50,7 @@ var handleError = function (err) {
     gutil.log('message: ' + err.message)
     gutil.log('plugin: ' + colors.yellow(err.plugin))
 }
-//js文件配置
+//js文件压缩
 gulp.task('uglifyjs',function(){
     var combined = combiner.obj([
         gulp.src('src/js/**/*.js')
@@ -52,13 +61,15 @@ gulp.task('uglifyjs',function(){
     combined.on('error', handleError)
 })
 
+
 gulp.task('watch', function() {
     gulp.watch('src/js/**/*.js',['jshint','uglify']);
     gulp.watch('src/less/**/*.less,'['less','sourcemaps']);
+    gulp.watch('src/css/**/*.css',['minifycss']);
 })
 
 
 gulp.task('default', [
-    'less','jshint','uglifyjs', 'watch'
+    'less','minifycss','jshint','uglifyjs', 'watch'
     ]
 )
