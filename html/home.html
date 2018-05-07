@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui">
+    <title>首页</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link rel="stylesheet" href="../libs/swiper/swiper.min.css"/>
+    <link rel="stylesheet" href="../dist/css/main.min.css">
+    <script>
+    var setDeviceWidth = function () {
+        var deviceWidth = document.documentElement.clientWidth;
+        deviceWidth = deviceWidth > 750 ? 750 : deviceWidth;
+        document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+    }
+    window.onload = setDeviceWidth;
+    window.onresize = setDeviceWidth;
+</script>
+</head>
+<body>
+	<div id="set" class="swiper-container set-swiper">
+	 <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="../dist/images/category/a.png" />
+            </div>
+            <div class="swiper-slide">
+                <img src="../dist/images/category/b.png" />
+            </div>
+            <div class="swiper-slide">
+                <img src="../dist/images/category/c.png" />
+            </div>
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+	 <script src="../libs/zepto.min.js"></script>
+    <script src="../libs/swiper/swiper.min.js"></script>
+    <script type="text/javascript">
+    	var res = [
+    	{id:3,pid:0,name:'1'},
+    	{id:5,pid:3,name:'1'},
+    	{id:6,pid:5,name:'1'},
+    	{id:8,pid:6,name:'1'}
+    	];
+    	var data=[];
+
+    	 var convertData = function (d) {
+            for (var i = 0; i < d.length; i++) {
+                if (d[i].pid == 0) {
+                    d[i].children = [];
+                    data.push(res[i]);
+                }
+                for (var j = 0; j < data.length; j++) {
+                    if (d[i].pid == data[j].id) {
+                    	
+                        data[j].children.push(d[i]);
+                    } else {
+                        convertData(d[i]);
+                    }
+                }
+            }
+            //$('#asideMenu').html(tpl_asideMenu(data));
+
+        }
+
+        convertData(res);
+        console.log(data, 'menu');
+    </script>
+</body>
+</html>
